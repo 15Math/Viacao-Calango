@@ -5,10 +5,13 @@ import org.springframework.context.annotation.Configuration;
 import lombok.Data;
 
 @Configuration
-@ConfigurationProperties(prefix = "viacao.pricing")
+@ConfigurationProperties(prefix = "calango.precificacao")
 @Data
 public class PricingConfig {
-    private Double descontoAntecedencia30Dias;
-    private Double multiplicadorLeito;
-    private Double multiplicadorExecutivo;
+    private Integer diasAntecedencia;
+    private Double descontoAntecedencia;
+    private Double descontoTrajetoCompleto;
+    private Double fatorLeito;
+    private Double fatorSemiLeito;
+    private Double fatorExecutivo;
 }

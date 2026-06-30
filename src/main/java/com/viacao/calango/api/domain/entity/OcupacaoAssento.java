@@ -26,9 +26,12 @@ public class OcupacaoAssento {
     @Column(name = "numero_assento", nullable = false)
     private Integer numeroAssento;
 
+    @Column(name = "ordem_segmento", nullable = false)
+    private Integer ordemSegmento; // Define a posição do trecho na sequência da rota
+
     @Column(nullable = false)
     private String status; // LIVRE, OCUPADO
 
     @Version
-    private Integer versao; // Controle de concorrência para vendas simultâneas
+    private Integer versao;
 }

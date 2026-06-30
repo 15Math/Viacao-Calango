@@ -25,11 +25,21 @@ public class ControlarRevisaoUseCase {
         onibus.setQuilometragemDesdeUltimaRevisao(onibus.getQuilometragemDesdeUltimaRevisao() + kmRodados);
 
         if (onibus.getQuilometragemDesdeUltimaRevisao() >= LIMITE_REVISAO_KM) {
-            log.warn("ALERTA DE MANUTENÇÃO: O ônibus placa {} atingiu {} km desde a última revisão. Encaminhar para garagem!",
+            log.error("BLOQUEIO DE FROTA: O ônibus placa {} atingiu {} km desde a última revisão. Alocações impedidas até a manutenção!",
                     onibus.getPlaca(), onibus.getQuilometragemDesdeUltimaRevisao());
-            // Aqui você poderia alterar o status do ônibus para "EM_MANUTENCAO"
         }
 
         onibusRepository.save(onibus);
+    }
+
+    //Permitir dar baixa na oficina e liberar o veiculo para novas viagens
+    @Transactional
+    public void realizarRevisao(Long onibusId) {
+        Onibus onibus = onibusRepository.findById(onibusId)
+                .orElseThrow(() -> new RegraNegocioException("Ônibus não encontrado."));
+
+        onibus.setQuilometragemDesdeUltimaRevisao(0.0);
+        onibusRepository.save(onibus);
+        log.info("MANUTENÇÃO CONCLUÍDA: O ônibus placa {} teve seu contador zerado e está liberado para tráfego.", onibus.getPlaca());
     }
 }

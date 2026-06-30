@@ -1,27 +1,21 @@
 package com.viacao.calango.api.application.dto;
 
 import com.viacao.calango.api.domain.entity.Passagem;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 public record PassagemResponseDto(
         Long id,
-        ViagemResponseDto viagem,
-        String origemNome,
-        String destinoNome,
+        String origem,
+        String destino,
         Integer numeroAssento,
-        BigDecimal valorPago,
-        LocalDateTime dataCompra
+        java.math.BigDecimal valorPago
 ) {
-    public static PassagemResponseDto fromEntity(Passagem passagem) {
+    public static PassagemResponseDto fromEntity(Passagem p) {
         return new PassagemResponseDto(
-                passagem.getId(),
-                ViagemResponseDto.fromEntity(passagem.getViagem()),
-                passagem.getOrigem().getNome(),
-                passagem.getDestino().getNome(),
-                passagem.getNumeroAssento(),
-                passagem.getValorPago(),
-                passagem.getDataCompra()
+                p.getId(),
+                p.getOrigem().getNome(),
+                p.getDestino().getNome(),
+                p.getNumeroAssento(),
+                p.getValorPago()
         );
     }
 }

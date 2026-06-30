@@ -17,4 +17,10 @@ public class FrotaController {
         controlarRevisaoUseCase.registrarFimViagem(onibusId, kmRodados);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{onibusId}/concluir-revisao")
+    public ResponseEntity<Void> concluirRevisao(@PathVariable Long onibusId) {
+        controlarRevisaoUseCase.realizarRevisao(onibusId);
+        return ResponseEntity.ok().build();
+    }
 }

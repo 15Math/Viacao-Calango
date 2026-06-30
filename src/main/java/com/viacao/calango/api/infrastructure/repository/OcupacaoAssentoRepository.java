@@ -11,7 +11,23 @@ import java.util.List;
 @Repository
 public interface OcupacaoAssentoRepository extends JpaRepository<OcupacaoAssento, Long> {
 
-    @Query("SELECT o.numeroAssento FROM OcupacaoAssento o WHERE o.viagem.id = :viagemId AND o.status = 'LIVRE' GROUP BY o.numeroAssento")
-    List<Integer> findAssentosDisponiveis(@Param("viagemId") Long viagemId);
+    @Query("""
+        SELECT o.numeroAssento FROM OcupacaoAssento o 
+        WHERE o.viagem.id = :viagemId 
+        AND o.status = 'LIVRE' 
+        AND o.ordemSegmento >= :ordemInicio 
+        AND o.ordemSegmento < :ordemFim 
+        GROUP BY o.numeroAssento 
+        HAVING COUNT(o.id) = :totalSegmentos
+        ORDER BY o.numeroAssento ASC
+    """)
+    List<Integer> findAssentosDisponiveisNoTrecho(
+            @Param("viagemId") Long viagemId,
+            @Param("ordemInicio") Integer ordemInicio,
+            @Param("ordemFim") Integer ordemFim,
+            @Param("totalSegmentos") Long totalSegmentos
+    );
 
+    @Query("SELECT o FROM OcupacaoAssento o WHERE o.viagem.id = :viagemId AND o.numeroAssento = :numeroAssento")
+    List<OcupacaoAssento> findByViagemAndAssento(@Param("viagemId") Long viagemId, @Param("numeroAssento") Integer numeroAssento);
 }
