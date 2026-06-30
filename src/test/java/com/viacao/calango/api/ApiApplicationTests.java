@@ -1,4 +1,4 @@
-package com.pedidos.estoque.api;
+package com.viacao.calango.api;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
