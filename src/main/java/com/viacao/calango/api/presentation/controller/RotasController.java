@@ -23,11 +23,6 @@ public class RotasController {
         return ResponseEntity.ok(gerenciarRotaUseCase.listar());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<RotaResponseDto> buscar(@PathVariable Long id) {
-        return ResponseEntity.ok(gerenciarRotaUseCase.buscar(id));
-    }
-
     @PostMapping
     public ResponseEntity<RotaResponseDto> criar(@Valid @RequestBody RotaRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(gerenciarRotaUseCase.criar(request));

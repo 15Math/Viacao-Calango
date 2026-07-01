@@ -26,13 +26,6 @@ public class GerenciarRotaUseCase {
         return rotaRepository.findAllComItinerario().stream().map(RotaResponseDto::fromEntity).toList();
     }
 
-    @Transactional(readOnly = true)
-    public RotaResponseDto buscar(Long id) {
-        Rota rota = rotaRepository.findComItinerarioById(id)
-                .orElseThrow(() -> new RegraNegocioException("Rota não encontrada."));
-        return RotaResponseDto.fromEntity(rota);
-    }
-
     @Transactional
     public RotaResponseDto criar(RotaRequestDto request) {
         Rota rota = new Rota();

@@ -2,7 +2,6 @@ package com.viacao.calango.api.application.usecase;
 
 import com.viacao.calango.api.application.dto.OnibusRequestDto;
 import com.viacao.calango.api.application.dto.OnibusResponseDto;
-import com.viacao.calango.api.application.dto.SugestaoOnibusDto;
 import com.viacao.calango.api.domain.entity.Onibus;
 import com.viacao.calango.api.domain.enums.StatusOnibus;
 import com.viacao.calango.api.domain.exception.RegraNegocioException;
@@ -11,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -51,36 +49,6 @@ public class GerenciarOnibusUseCase {
         onibus.setQuilometragemDesdeUltimaRevisao(0.0);
         onibus.setStatus(StatusOnibus.DISPONIVEL);
         return OnibusResponseDto.fromEntity(onibusRepository.save(onibus));
-    }
-
-    @Transactional(readOnly = true)
-    public SugestaoOnibusDto sugerirOnibus(int passageirosEsperados) {
-        List<Onibus> candidatos = onibusRepository.findByStatus(StatusOnibus.DISPONIVEL).stream()
-                .filter(o -> !o.precisaRevisao())
-                .filter(o -> o.getCapacidade() >= passageirosEsperados)
-                .toList();
-
-        if (candidatos.isEmpty()) {
-            throw new RegraNegocioException("Não há ônibus disponíveis com capacidade para " + passageirosEsperados + " passageiros.");
-        }
-
-        Onibus melhor = candidatos.stream()
-                .min(Comparator.comparingInt(o -> o.getCapacidade() - passageirosEsperados))
-                .orElseThrow();
-
-        int vazios = melhor.getCapacidade() - passageirosEsperados;
-        String recomendacao = vazios == 0
-                ? "Capacidade exata — ocupação ideal."
-                : "Menor capacidade disponível com " + vazios + " lugares vazios estimados.";
-
-        return new SugestaoOnibusDto(
-                melhor.getId(),
-                melhor.getPlaca(),
-                melhor.getTipo(),
-                melhor.getCapacidade(),
-                vazios,
-                recomendacao
-        );
     }
 
     public Onibus buscarEntidade(Long id) {

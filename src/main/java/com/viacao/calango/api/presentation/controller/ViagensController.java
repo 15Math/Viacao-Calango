@@ -1,7 +1,11 @@
 package com.viacao.calango.api.presentation.controller;
 
-import com.viacao.calango.api.application.dto.*;
-import com.viacao.calango.api.application.usecase.*;
+import com.viacao.calango.api.application.dto.AssentoMapaDto;
+import com.viacao.calango.api.application.dto.CriarViagemRequestDto;
+import com.viacao.calango.api.application.dto.ViagemDetalheDto;
+import com.viacao.calango.api.application.dto.ViagemResumoDto;
+import com.viacao.calango.api.application.usecase.ConsultarAssentosUseCase;
+import com.viacao.calango.api.application.usecase.GerenciarViagemUseCase;
 import com.viacao.calango.api.domain.enums.StatusViagem;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/viagens")
@@ -21,8 +24,6 @@ public class ViagensController {
 
     private final GerenciarViagemUseCase gerenciarViagemUseCase;
     private final ConsultarAssentosUseCase consultarAssentosUseCase;
-    private final CotarPrecoUseCase cotarPrecoUseCase;
-    private final OtimizarAlocacaoPassageirosUseCase otimizarAlocacaoPassageirosUseCase;
 
     @GetMapping
     public ResponseEntity<List<ViagemResumoDto>> buscar(
@@ -59,22 +60,5 @@ public class ViagensController {
             @RequestParam Long destinoId
     ) {
         return ResponseEntity.ok(consultarAssentosUseCase.consultarMapa(id, origemId, destinoId));
-    }
-
-    @GetMapping("/{id}/cotacao")
-    public ResponseEntity<CotacaoResponseDto> cotar(
-            @PathVariable Long id,
-            @RequestParam Long origemId,
-            @RequestParam Long destinoId
-    ) {
-        return ResponseEntity.ok(cotarPrecoUseCase.cotar(id, origemId, destinoId));
-    }
-
-    @GetMapping("/otimizacao")
-    public ResponseEntity<Map<String, Object>> otimizarAlocacao(
-            @RequestParam Long rotaId,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data
-    ) {
-        return ResponseEntity.ok(otimizarAlocacaoPassageirosUseCase.analisar(rotaId, data));
     }
 }

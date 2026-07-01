@@ -23,11 +23,6 @@ public class ParadasController {
         return ResponseEntity.ok(gerenciarParadaUseCase.listar());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ParadaResponseDto> buscar(@PathVariable Long id) {
-        return ResponseEntity.ok(gerenciarParadaUseCase.buscar(id));
-    }
-
     @PostMapping
     public ResponseEntity<ParadaResponseDto> criar(@Valid @RequestBody ParadaRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(gerenciarParadaUseCase.criar(request));

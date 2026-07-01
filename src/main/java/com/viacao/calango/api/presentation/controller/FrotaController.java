@@ -2,7 +2,7 @@ package com.viacao.calango.api.presentation.controller;
 
 import com.viacao.calango.api.application.dto.OnibusRequestDto;
 import com.viacao.calango.api.application.dto.OnibusResponseDto;
-import com.viacao.calango.api.application.dto.SugestaoOnibusDto;
+import com.viacao.calango.api.application.usecase.ControlarRevisaoUseCase;
 import com.viacao.calango.api.application.usecase.GerenciarOnibusUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.List;
 public class FrotaController {
 
     private final GerenciarOnibusUseCase gerenciarOnibusUseCase;
-    private final com.viacao.calango.api.application.usecase.ControlarRevisaoUseCase controlarRevisaoUseCase;
+    private final ControlarRevisaoUseCase controlarRevisaoUseCase;
 
     @GetMapping("/onibus")
     public ResponseEntity<List<OnibusResponseDto>> listarOnibus() {
@@ -38,11 +38,6 @@ public class FrotaController {
     @PostMapping("/onibus")
     public ResponseEntity<OnibusResponseDto> criarOnibus(@Valid @RequestBody OnibusRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(gerenciarOnibusUseCase.criar(request));
-    }
-
-    @GetMapping("/onibus/sugestao")
-    public ResponseEntity<SugestaoOnibusDto> sugerirOnibus(@RequestParam int passageirosEsperados) {
-        return ResponseEntity.ok(gerenciarOnibusUseCase.sugerirOnibus(passageirosEsperados));
     }
 
     @PostMapping("/{onibusId}/fim-viagem")

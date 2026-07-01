@@ -22,11 +22,6 @@ public class GerenciarParadaUseCase {
         return paradaRepository.findAll().stream().map(ParadaResponseDto::fromEntity).toList();
     }
 
-    @Transactional(readOnly = true)
-    public ParadaResponseDto buscar(Long id) {
-        return ParadaResponseDto.fromEntity(buscarEntidade(id));
-    }
-
     @Transactional
     public ParadaResponseDto criar(ParadaRequestDto request) {
         Parada parada = new Parada();
