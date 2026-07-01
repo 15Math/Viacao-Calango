@@ -1,10 +1,13 @@
 package com.viacao.calango.api.application.dto;
 
 import com.viacao.calango.api.domain.enums.TipoPagamento;
+import jakarta.validation.constraints.NotNull;
 
 public record PassagemRequestDto(
-        Long viagemId,
-        Long origemId,
-        Long destinoId,
-        TipoPagamento tipoPagamento
+        @NotNull Long viagemId,
+        @NotNull Long origemId,
+        @NotNull Long destinoId,
+        @NotNull TipoPagamento tipoPagamento,
+        Long guicheId,
+        Integer numeroAssento
 ) {}

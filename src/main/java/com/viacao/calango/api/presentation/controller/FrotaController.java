@@ -1,16 +1,49 @@
 package com.viacao.calango.api.presentation.controller;
 
-import com.viacao.calango.api.application.usecase.ControlarRevisaoUseCase;
+import com.viacao.calango.api.application.dto.OnibusRequestDto;
+import com.viacao.calango.api.application.dto.OnibusResponseDto;
+import com.viacao.calango.api.application.dto.SugestaoOnibusDto;
+import com.viacao.calango.api.application.usecase.GerenciarOnibusUseCase;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/frota")
 @RequiredArgsConstructor
 public class FrotaController {
 
-    private final ControlarRevisaoUseCase controlarRevisaoUseCase;
+    private final GerenciarOnibusUseCase gerenciarOnibusUseCase;
+    private final com.viacao.calango.api.application.usecase.ControlarRevisaoUseCase controlarRevisaoUseCase;
+
+    @GetMapping("/onibus")
+    public ResponseEntity<List<OnibusResponseDto>> listarOnibus() {
+        return ResponseEntity.ok(gerenciarOnibusUseCase.listar());
+    }
+
+    @GetMapping("/onibus/disponiveis")
+    public ResponseEntity<List<OnibusResponseDto>> listarDisponiveis() {
+        return ResponseEntity.ok(gerenciarOnibusUseCase.listarDisponiveis());
+    }
+
+    @GetMapping("/onibus/revisao-pendente")
+    public ResponseEntity<List<OnibusResponseDto>> listarRevisaoPendente() {
+        return ResponseEntity.ok(gerenciarOnibusUseCase.listarRevisaoPendente());
+    }
+
+    @PostMapping("/onibus")
+    public ResponseEntity<OnibusResponseDto> criarOnibus(@Valid @RequestBody OnibusRequestDto request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(gerenciarOnibusUseCase.criar(request));
+    }
+
+    @GetMapping("/onibus/sugestao")
+    public ResponseEntity<SugestaoOnibusDto> sugerirOnibus(@RequestParam int passageirosEsperados) {
+        return ResponseEntity.ok(gerenciarOnibusUseCase.sugerirOnibus(passageirosEsperados));
+    }
 
     @PostMapping("/{onibusId}/fim-viagem")
     public ResponseEntity<Void> registrarFimViagem(@PathVariable Long onibusId, @RequestParam Double kmRodados) {

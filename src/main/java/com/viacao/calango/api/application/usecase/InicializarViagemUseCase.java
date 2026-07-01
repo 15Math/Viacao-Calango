@@ -49,4 +49,36 @@ public class InicializarViagemUseCase {
         ocupacaoRepository.saveAll(matrizOcupacao);
         return viagemSalva;
     }
+
+    @Transactional
+    public void garantirMatrizAssentos(Long viagemId) {
+        Viagem viagem = viagemRepository.findById(viagemId)
+                .orElseThrow(() -> new RegraNegocioException("Viagem não encontrada."));
+        List<RotaParada> itinerario = viagem.getRota().getItinerario();
+        if (itinerario == null || itinerario.size() < 2) {
+            return;
+        }
+        long esperado = (long) (itinerario.size() - 1) * viagem.getOnibus().getCapacidade();
+        if (ocupacaoRepository.countByViagemId(viagemId) >= esperado) {
+            return;
+        }
+        ocupacaoRepository.deleteByViagemId(viagemId);
+
+        List<OcupacaoAssento> matrizOcupacao = new ArrayList<>();
+        for (int i = 0; i < itinerario.size() - 1; i++) {
+            Parada origenSegmento = itinerario.get(i).getParada();
+            Parada destinoSegmento = itinerario.get(i + 1).getParada();
+            for (int assento = 1; assento <= viagem.getOnibus().getCapacidade(); assento++) {
+                OcupacaoAssento ocupacao = new OcupacaoAssento();
+                ocupacao.setViagem(viagem);
+                ocupacao.setOrigemSegmento(origenSegmento);
+                ocupacao.setDestinoSegmento(destinoSegmento);
+                ocupacao.setNumeroAssento(assento);
+                ocupacao.setOrdemSegmento(i);
+                ocupacao.setStatus("LIVRE");
+                matrizOcupacao.add(ocupacao);
+            }
+        }
+        ocupacaoRepository.saveAll(matrizOcupacao);
+    }
 }

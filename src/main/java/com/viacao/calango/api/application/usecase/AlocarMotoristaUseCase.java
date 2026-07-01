@@ -99,4 +99,14 @@ public class AlocarMotoristaUseCase {
         if (motorista.getKmDirigidosHoje() + kmTrecho > LIMITE_KM) return false;
         return true;
     }
+
+    public boolean isAptoParaTrecho(Motorista motorista, Double duracaoTrecho, Double kmTrecho) {
+        if (motorista.getFimUltimoTurno() != null) {
+            long horasDescansadas = ChronoUnit.HOURS.between(motorista.getFimUltimoTurno(), LocalDateTime.now());
+            if (horasDescansadas >= HORAS_DESCANSO && motorista.getStatus() == StatusMotorista.EM_DESCANSO) {
+                return duracaoTrecho <= LIMITE_HORAS && kmTrecho <= LIMITE_KM;
+            }
+        }
+        return isAptoParaDirigir(motorista, duracaoTrecho, kmTrecho);
+    }
 }

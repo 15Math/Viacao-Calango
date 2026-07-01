@@ -1,5 +1,6 @@
 package com.viacao.calango.api.domain.entity;
 
+import com.viacao.calango.api.domain.enums.StatusOnibus;
 import com.viacao.calango.api.domain.enums.TipoOnibus;
 import com.viacao.calango.api.domain.exception.RegraNegocioException;
 import jakarta.persistence.*;
@@ -26,6 +27,14 @@ public class Onibus {
 
     @Column(name = "quilometragem_desde_ultima_revisao")
     private Double quilometragemDesdeUltimaRevisao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private StatusOnibus status = StatusOnibus.DISPONIVEL;
+
+    public boolean precisaRevisao() {
+        return quilometragemDesdeUltimaRevisao != null && quilometragemDesdeUltimaRevisao >= 10000.0;
+    }
 
     public void setCapacidade(Integer capacidade) {
         if (capacidade != 23 && capacidade != 28 && capacidade != 32) {

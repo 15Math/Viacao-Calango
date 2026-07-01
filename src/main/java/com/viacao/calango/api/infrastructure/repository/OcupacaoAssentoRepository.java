@@ -11,6 +11,10 @@ import java.util.List;
 @Repository
 public interface OcupacaoAssentoRepository extends JpaRepository<OcupacaoAssento, Long> {
 
+    long countByViagemId(Long viagemId);
+
+    void deleteByViagemId(Long viagemId);
+
     @Query("""
         SELECT o.numeroAssento FROM OcupacaoAssento o 
         WHERE o.viagem.id = :viagemId 

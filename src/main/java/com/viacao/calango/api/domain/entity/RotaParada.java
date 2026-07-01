@@ -25,4 +25,7 @@ public class RotaParada {
 
     @Column(name = "distancia_proxima_parada_km")
     private Double distanciaProximaParadaKm;
+
+    @Column(name = "parada_troca_motorista")
+    private Boolean paradaTrocaMotorista = false;
 }
