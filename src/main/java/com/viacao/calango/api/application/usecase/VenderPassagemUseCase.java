@@ -7,7 +7,6 @@ import com.viacao.calango.api.domain.enums.TipoPagamento;
 import com.viacao.calango.api.domain.exception.RegraNegocioException;
 import com.viacao.calango.api.domain.service.CalculadoraPrecoService;
 import com.viacao.calango.api.domain.service.RotaUtilService;
-import com.viacao.calango.api.infrastructure.repository.GuicheRepository;
 import com.viacao.calango.api.infrastructure.repository.ParadaRepository;
 import com.viacao.calango.api.infrastructure.repository.PassagemRepository;
 import com.viacao.calango.api.infrastructure.repository.ViagemRepository;
@@ -27,7 +26,6 @@ public class VenderPassagemUseCase {
     private final ViagemRepository viagemRepository;
     private final ParadaRepository paradaRepository;
     private final PassagemRepository passagemRepository;
-    private final GuicheRepository guicheRepository;
     private final CalculadoraPrecoService calculadoraPrecoService;
     private final AlocacaoPassageiroUseCase alocacaoPassageiroUseCase;
     private final RotaUtilService rotaUtilService;
@@ -62,22 +60,13 @@ public class VenderPassagemUseCase {
                 precoTrecho,
                 LocalDateTime.now(),
                 viagem,
-                viagem.getOnibus().getTipo().name(),
+                viagem.getOnibus().getTipo(),
                 isTrajetoCompleto
         );
 
         Integer assento = request.numeroAssento() != null
                 ? alocacaoPassageiroUseCase.alocarAssentoEspecifico(viagem.getId(), ordens[0], ordens[1], request.numeroAssento())
                 : alocacaoPassageiroUseCase.alocarMelhorAssento(viagem.getId(), ordens[0], ordens[1]);
-
-        Guiche guiche = null;
-        if (request.tipoPagamento() == TipoPagamento.DINHEIRO_GUICHE) {
-            if (request.guicheId() == null) {
-                throw new RegraNegocioException("Vendas em guichê exigem o identificador do guichê.");
-            }
-            guiche = guicheRepository.findById(request.guicheId())
-                    .orElseThrow(() -> new RegraNegocioException("Guichê não encontrado."));
-        }
 
         Passagem passagem = new Passagem();
         passagem.setViagem(viagem);
@@ -87,14 +76,13 @@ public class VenderPassagemUseCase {
         passagem.setValorPago(precoFinal);
         passagem.setDataCompra(LocalDateTime.now());
         passagem.setTipoPagamento(request.tipoPagamento());
-        passagem.setGuiche(guiche);
         passagem.setCodigoTransacao(gerarCodigoTransacao(request.tipoPagamento()));
 
         return passagemRepository.save(passagem);
     }
 
     private String gerarCodigoTransacao(TipoPagamento tipo) {
-        String prefixo = tipo == TipoPagamento.CARTAO_INTERNET ? "WEB" : "GCH";
+        String prefixo = tipo == TipoPagamento.CARTAO_INTERNET ? "WEB" : "TKT";
         return prefixo + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 }

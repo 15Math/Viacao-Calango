@@ -1,6 +1,7 @@
 package com.viacao.calango.api.application.usecase;
 
 import com.viacao.calango.api.domain.entity.OcupacaoAssento;
+import com.viacao.calango.api.domain.enums.StatusAssento;
 import com.viacao.calango.api.domain.exception.AssentoOcupadoException;
 import com.viacao.calango.api.domain.exception.RegraNegocioException;
 import com.viacao.calango.api.infrastructure.repository.OcupacaoAssentoRepository;
@@ -21,7 +22,7 @@ public class AlocacaoPassageiroUseCase {
         long totalSegmentosRequeridos = ordemFim - ordemInicio;
 
         List<Integer> assentosLivres = ocupacaoRepository.findAssentosDisponiveisNoTrecho(
-                viagemId, ordemInicio, ordemFim, totalSegmentosRequeridos
+                viagemId, ordemInicio, ordemFim, totalSegmentosRequeridos,StatusAssento.LIVRE
         );
 
         if (assentosLivres == null || assentosLivres.isEmpty()) {
@@ -36,7 +37,7 @@ public class AlocacaoPassageiroUseCase {
         long totalSegmentosRequeridos = ordemFim - ordemInicio;
 
         List<Integer> assentosLivres = ocupacaoRepository.findAssentosDisponiveisNoTrecho(
-                viagemId, ordemInicio, ordemFim, totalSegmentosRequeridos
+                viagemId, ordemInicio, ordemFim, totalSegmentosRequeridos, StatusAssento.LIVRE
         );
 
         if (!assentosLivres.contains(numeroAssento)) {
@@ -50,7 +51,7 @@ public class AlocacaoPassageiroUseCase {
         List<OcupacaoAssento> ocupacoes = ocupacaoRepository.findByViagemAndAssento(viagemId, assentoSelecionado);
         for (OcupacaoAssento ocupacao : ocupacoes) {
             if (ocupacao.getOrdemSegmento() >= ordemInicio && ocupacao.getOrdemSegmento() < ordemFim) {
-                ocupacao.setStatus("OCUPADO");
+                ocupacao.setStatus(StatusAssento.OCUPADO);
             }
         }
         ocupacaoRepository.saveAll(ocupacoes);

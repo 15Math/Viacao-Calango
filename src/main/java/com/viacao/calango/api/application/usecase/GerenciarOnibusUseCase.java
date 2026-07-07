@@ -2,14 +2,17 @@ package com.viacao.calango.api.application.usecase;
 
 import com.viacao.calango.api.application.dto.OnibusRequestDto;
 import com.viacao.calango.api.application.dto.OnibusResponseDto;
-import com.viacao.calango.api.domain.entity.Onibus;
+import com.viacao.calango.api.domain.enums.TipoOnibus;
 import com.viacao.calango.api.domain.enums.StatusOnibus;
+import com.viacao.calango.api.domain.entity.Onibus;
 import com.viacao.calango.api.domain.exception.RegraNegocioException;
+import com.viacao.calango.api.infrastructure.repository.ConfiguracaoSistemaRepository;
 import com.viacao.calango.api.infrastructure.repository.OnibusRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -17,6 +20,7 @@ import java.util.List;
 public class GerenciarOnibusUseCase {
 
     private final OnibusRepository onibusRepository;
+    private final ConfiguracaoSistemaRepository configuracaoRepository;
 
     @Transactional(readOnly = true)
     public List<OnibusResponseDto> listar() {
@@ -39,20 +43,42 @@ public class GerenciarOnibusUseCase {
                 .toList();
     }
 
-    @Transactional
-    public OnibusResponseDto criar(OnibusRequestDto request) {
-        Onibus onibus = new Onibus();
-        onibus.setPlaca(request.placa());
-        onibus.setCapacidade(request.capacidade());
-        onibus.setTipo(request.tipo());
-        onibus.setQuilometragemTotal(0.0);
-        onibus.setQuilometragemDesdeUltimaRevisao(0.0);
-        onibus.setStatus(StatusOnibus.DISPONIVEL);
-        return OnibusResponseDto.fromEntity(onibusRepository.save(onibus));
-    }
-
     public Onibus buscarEntidade(Long id) {
         return onibusRepository.findById(id)
                 .orElseThrow(() -> new RegraNegocioException("Ônibus não encontrado."));
+    }
+
+    @Transactional
+    public OnibusResponseDto cadastrar(OnibusRequestDto request) {
+        if (onibusRepository.existsByPlaca(request.placa())) {
+            throw new RegraNegocioException("Já existe um ônibus cadastrado com a placa " + request.placa());
+        }
+
+        //verificar se esta na capacidade permitida
+        String capacidadesPermitidasStr = configuracaoRepository.findByChave("CAPACIDADES_PERMITIDAS")
+                .map(config -> config.getValor())
+                .orElse("23,28,32");
+
+        List<Integer> capacidadesPermitidas = Arrays.stream(capacidadesPermitidasStr.split(","))
+                .map(String::trim)
+                .map(Integer::parseInt)
+                .toList();
+
+        if (!capacidadesPermitidas.contains(request.capacidade())) {
+            throw new RegraNegocioException("A capacidade fornecida (" + request.capacidade() +
+                    ") não é permitida. Valores aceitos: " + capacidadesPermitidasStr);
+        }
+
+        Onibus novoOnibus = new Onibus();
+        novoOnibus.setPlaca(request.placa());
+        novoOnibus.setCapacidade(request.capacidade());
+        novoOnibus.setTipo(TipoOnibus.valueOf(request.tipo()));
+        novoOnibus.setStatus(StatusOnibus.DISPONIVEL);
+        novoOnibus.setQuilometragemTotal(0.0);
+        novoOnibus.setQuilometragemDesdeUltimaRevisao(0.0);
+
+        Onibus onibusSalvo = onibusRepository.save(novoOnibus);
+
+        return OnibusResponseDto.fromEntity(onibusSalvo);
     }
 }

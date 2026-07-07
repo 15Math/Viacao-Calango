@@ -3,7 +3,6 @@ package com.viacao.calango.api.presentation.controller;
 import com.viacao.calango.api.application.dto.ParadaRequestDto;
 import com.viacao.calango.api.application.dto.ParadaResponseDto;
 import com.viacao.calango.api.application.usecase.GerenciarParadaUseCase;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,14 +16,15 @@ import java.util.List;
 public class ParadasController {
 
     private final GerenciarParadaUseCase gerenciarParadaUseCase;
-
+    //lista as paradas
     @GetMapping
     public ResponseEntity<List<ParadaResponseDto>> listar() {
         return ResponseEntity.ok(gerenciarParadaUseCase.listar());
     }
-
+    //Criar parada
     @PostMapping
-    public ResponseEntity<ParadaResponseDto> criar(@Valid @RequestBody ParadaRequestDto request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(gerenciarParadaUseCase.criar(request));
+    public ResponseEntity<ParadaResponseDto> criar(@RequestBody ParadaRequestDto request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(gerenciarParadaUseCase.criar(request));
     }
 }

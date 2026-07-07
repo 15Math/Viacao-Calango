@@ -34,6 +34,9 @@ public class Viagem {
     @OneToMany(mappedBy = "viagem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EscalaMotorista> escalas = new ArrayList<>();
 
+    @OneToMany(mappedBy = "viagem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OcupacaoAssento> ocupacoes = new ArrayList<>();
+
     @Column(name = "data_hora_saida", nullable = false)
     private LocalDateTime dataHoraSaida;
 
@@ -41,6 +44,6 @@ public class Viagem {
     private LocalDateTime dataHoraChegada;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "\"status\"", nullable = false)
     private StatusViagem status = StatusViagem.PROGRAMADA;
 }

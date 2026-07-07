@@ -1,12 +1,10 @@
 package com.viacao.calango.api;
 
-import com.viacao.calango.api.infrastructure.config.PricingConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties(PricingConfig.class)
 public class ViacaoCalangoApplication {
     public static void main(String[] args) {
         SpringApplication.run(ViacaoCalangoApplication.class, args);

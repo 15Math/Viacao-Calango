@@ -5,21 +5,24 @@ import com.viacao.calango.api.domain.entity.RotaParada;
 import com.viacao.calango.api.domain.entity.Viagem;
 import com.viacao.calango.api.domain.exception.RegraNegocioException;
 import com.viacao.calango.api.domain.service.strategy.PrecoStrategy;
-import com.viacao.calango.api.infrastructure.config.PricingConfig;
+import lombok.extern.slf4j.Slf4j;
+import com.viacao.calango.api.infrastructure.repository.ConfiguracaoSistemaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.viacao.calango.api.domain.enums.TipoOnibus;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CalculadoraPrecoService {
 
     private final List<PrecoStrategy> estrategias;
-    private final PricingConfig pricingConfig;
+    private final ConfiguracaoSistemaRepository configuracaoRepository;
 
     public BigDecimal calcularPrecoTrecho(Rota rota, int ordemInicio, int ordemFim) {
         List<RotaParada> itinerario = rota.getItinerario();
@@ -41,7 +44,7 @@ public class CalculadoraPrecoService {
     }
 
     public BigDecimal calcularPrecoFinal(BigDecimal precoBaseTrecho, LocalDateTime dataCompra, Viagem viagem,
-                                         String tipoOnibus, boolean isTrajetoCompleto) {
+                                         TipoOnibus tipoOnibus, boolean isTrajetoCompleto) {
         BigDecimal precoFinal = precoBaseTrecho;
 
         for (PrecoStrategy estrategia : estrategias) {
@@ -52,16 +55,18 @@ public class CalculadoraPrecoService {
         return precoFinal.setScale(2, RoundingMode.HALF_UP);
     }
 
-    private BigDecimal aplicarFatorTipoOnibus(BigDecimal preco, String tipoOnibus) {
-        if ("LEITO".equalsIgnoreCase(tipoOnibus) && pricingConfig.getFatorLeito() != null) {
-            return preco.multiply(BigDecimal.valueOf(pricingConfig.getFatorLeito()));
-        }
-        if ("SEMI_LEITO".equalsIgnoreCase(tipoOnibus) && pricingConfig.getFatorSemiLeito() != null) {
-            return preco.multiply(BigDecimal.valueOf(pricingConfig.getFatorSemiLeito()));
-        }
-        if ("EXECUTIVO".equalsIgnoreCase(tipoOnibus) && pricingConfig.getFatorExecutivo() != null) {
-            return preco.multiply(BigDecimal.valueOf(pricingConfig.getFatorExecutivo()));
-        }
-        return preco;
+    private BigDecimal aplicarFatorTipoOnibus(BigDecimal preco, TipoOnibus tipoOnibus) {
+        if (tipoOnibus == null) return preco;
+
+        String chaveConfig = "FATOR_" + tipoOnibus.name();
+
+        double fator = configuracaoRepository.findByChave(chaveConfig)
+                .map(config -> Double.parseDouble(config.getValor()))
+                .orElseGet(() -> {
+                    log.error("CRITICO: Chave de precificação '{}' ausente no banco de dados!", chaveConfig);
+                    return 1.0;
+                });
+
+        return preco.multiply(BigDecimal.valueOf(fator));
     }
 }

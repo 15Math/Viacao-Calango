@@ -17,12 +17,12 @@ import java.util.List;
 public class RotasController {
 
     private final GerenciarRotaUseCase gerenciarRotaUseCase;
-
+    //lista as rotas
     @GetMapping
     public ResponseEntity<List<RotaResponseDto>> listar() {
         return ResponseEntity.ok(gerenciarRotaUseCase.listar());
     }
-
+    //Cria uma rota
     @PostMapping
     public ResponseEntity<RotaResponseDto> criar(@Valid @RequestBody RotaRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(gerenciarRotaUseCase.criar(request));

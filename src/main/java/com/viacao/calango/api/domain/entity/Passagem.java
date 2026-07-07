@@ -39,10 +39,6 @@ public class Passagem {
     @Column(name = "tipo_pagamento")
     private TipoPagamento tipoPagamento;
 
-    @ManyToOne
-    @JoinColumn(name = "guiche_id")
-    private Guiche guiche;
-
     @Column(name = "codigo_transacao")
     private String codigoTransacao;
 }

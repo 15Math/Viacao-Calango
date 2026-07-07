@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class ConsultarPassagemUseCase {
@@ -21,12 +19,5 @@ public class ConsultarPassagemUseCase {
         Passagem passagem = passagemRepository.findById(id)
                 .orElseThrow(() -> new RegraNegocioException("Passagem não encontrada."));
         return PassagemResponseDto.fromEntity(passagem);
-    }
-
-    @Transactional(readOnly = true)
-    public List<PassagemResponseDto> listarPorViagem(Long viagemId) {
-        return passagemRepository.findByViagemId(viagemId).stream()
-                .map(PassagemResponseDto::fromEntity)
-                .toList();
     }
 }

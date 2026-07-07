@@ -8,6 +8,5 @@ public record PassagemRequestDto(
         @NotNull Long origemId,
         @NotNull Long destinoId,
         @NotNull TipoPagamento tipoPagamento,
-        Long guicheId,
         Integer numeroAssento
 ) {}

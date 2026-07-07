@@ -1,10 +1,8 @@
 package com.viacao.calango.api.presentation.controller;
 
-import com.viacao.calango.api.application.dto.AssentoMapaDto;
 import com.viacao.calango.api.application.dto.CriarViagemRequestDto;
 import com.viacao.calango.api.application.dto.ViagemDetalheDto;
 import com.viacao.calango.api.application.dto.ViagemResumoDto;
-import com.viacao.calango.api.application.usecase.ConsultarAssentosUseCase;
 import com.viacao.calango.api.application.usecase.GerenciarViagemUseCase;
 import com.viacao.calango.api.domain.enums.StatusViagem;
 import jakarta.validation.Valid;
@@ -23,8 +21,7 @@ import java.util.List;
 public class ViagensController {
 
     private final GerenciarViagemUseCase gerenciarViagemUseCase;
-    private final ConsultarAssentosUseCase consultarAssentosUseCase;
-
+    //Buscar Viagem por filtros
     @GetMapping
     public ResponseEntity<List<ViagemResumoDto>> buscar(
             @RequestParam(required = false) Long origemId,
@@ -34,31 +31,22 @@ public class ViagensController {
     ) {
         return ResponseEntity.ok(gerenciarViagemUseCase.buscar(origemId, destinoId, data, rotaId));
     }
-
+    //Buscar por id de viagem
     @GetMapping("/{id}")
     public ResponseEntity<ViagemDetalheDto> buscarDetalhe(@PathVariable Long id) {
         return ResponseEntity.ok(gerenciarViagemUseCase.buscarDetalhe(id));
     }
-
+    //Criar Viagem
     @PostMapping
     public ResponseEntity<ViagemDetalheDto> criar(@Valid @RequestBody CriarViagemRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(gerenciarViagemUseCase.criar(request));
     }
-
+    //Atualizar status da viagem : Programada, Em andamento , Concluida, ou Cancelada
     @PatchMapping("/{id}/status")
     public ResponseEntity<ViagemDetalheDto> atualizarStatus(
             @PathVariable Long id,
             @RequestParam StatusViagem status
     ) {
         return ResponseEntity.ok(gerenciarViagemUseCase.atualizarStatus(id, status));
-    }
-
-    @GetMapping("/{id}/assentos")
-    public ResponseEntity<List<AssentoMapaDto>> consultarAssentos(
-            @PathVariable Long id,
-            @RequestParam Long origemId,
-            @RequestParam Long destinoId
-    ) {
-        return ResponseEntity.ok(consultarAssentosUseCase.consultarMapa(id, origemId, destinoId));
     }
 }

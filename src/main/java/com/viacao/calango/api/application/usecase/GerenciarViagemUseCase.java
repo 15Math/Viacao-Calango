@@ -26,6 +26,7 @@ public class GerenciarViagemUseCase {
     private final GerenciarRotaUseCase gerenciarRotaUseCase;
     private final GerenciarOnibusUseCase gerenciarOnibusUseCase;
     private final InicializarViagemUseCase inicializarViagemUseCase;
+    private final AlocarMotoristaUseCase alocarMotoristaUseCase;
 
     @Transactional(readOnly = true)
     public List<ViagemResumoDto> buscar(Long origemId, Long destinoId, LocalDate data, Long rotaId) {
@@ -65,9 +66,6 @@ public class GerenciarViagemUseCase {
         if (onibus.precisaRevisao() || onibus.getStatus() == StatusOnibus.EM_REVISAO) {
             throw new RegraNegocioException("O ônibus " + onibus.getPlaca() + " está bloqueado para revisão.");
         }
-        if (onibus.getStatus() != StatusOnibus.DISPONIVEL) {
-            throw new RegraNegocioException("O ônibus " + onibus.getPlaca() + " não está disponível.");
-        }
 
         Viagem viagem = new Viagem();
         viagem.setRota(rota);
@@ -76,7 +74,10 @@ public class GerenciarViagemUseCase {
         viagem.setDataHoraChegada(request.dataHoraChegada());
         viagem.setStatus(StatusViagem.PROGRAMADA);
 
-        Viagem criada = inicializarViagemUseCase.ejecutar(viagem);
+        alocarMotoristaUseCase.alocarMotoristasNaViagem(viagem, rota.getItinerario());
+
+        Viagem criada = inicializarViagemUseCase.executar(viagem);
+
         onibus.setStatus(StatusOnibus.EM_VIAGEM);
         return ViagemDetalheDto.fromEntity(criada, 0);
     }

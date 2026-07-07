@@ -15,8 +15,7 @@ public record PassagemResponseDto(
         BigDecimal valorPago,
         TipoPagamento tipoPagamento,
         String codigoTransacao,
-        LocalDateTime dataCompra,
-        String guicheNome
+        LocalDateTime dataCompra
 ) {
     public static PassagemResponseDto fromEntity(Passagem p) {
         return new PassagemResponseDto(
@@ -28,8 +27,7 @@ public record PassagemResponseDto(
                 p.getValorPago(),
                 p.getTipoPagamento(),
                 p.getCodigoTransacao(),
-                p.getDataCompra(),
-                p.getGuiche() != null ? p.getGuiche().getNome() : null
+                p.getDataCompra()
         );
     }
 }

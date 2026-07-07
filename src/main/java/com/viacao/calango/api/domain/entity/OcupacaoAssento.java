@@ -1,5 +1,6 @@
 package com.viacao.calango.api.domain.entity;
 
+import com.viacao.calango.api.domain.enums.StatusAssento;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -7,19 +8,20 @@ import lombok.Data;
 @Table(name = "ocupacao_assento")
 @Data
 public class OcupacaoAssento {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "viagem_id", nullable = false)
     private Viagem viagem;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "origem_segmento_id", nullable = false)
     private Parada origemSegmento;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "destino_segmento_id", nullable = false)
     private Parada destinoSegmento;
 
@@ -27,10 +29,11 @@ public class OcupacaoAssento {
     private Integer numeroAssento;
 
     @Column(name = "ordem_segmento", nullable = false)
-    private Integer ordemSegmento; // Define a posição do trecho na sequência da rota
+    private Integer ordemSegmento;
 
-    @Column(nullable = false)
-    private String status; // LIVRE, OCUPADO
+    @Enumerated(EnumType.STRING)
+    @Column(name = "\"status\"", nullable = false)
+    private StatusAssento status = StatusAssento.LIVRE;
 
     @Version
     private Integer versao;

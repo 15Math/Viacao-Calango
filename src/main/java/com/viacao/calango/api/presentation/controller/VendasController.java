@@ -11,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/vendas")
 @RequiredArgsConstructor
@@ -21,6 +19,7 @@ public class VendasController {
     private final VenderPassagemUseCase venderPassagemUseCase;
     private final ConsultarPassagemUseCase consultarPassagemUseCase;
 
+    //Compra da passagem
     @PostMapping
     public ResponseEntity<PassagemResponseDto> realizarVenda(@Valid @RequestBody PassagemRequestDto request) {
         Passagem novaPassagem = venderPassagemUseCase.vender(request);
@@ -28,13 +27,9 @@ public class VendasController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    //buscar informações da passagem
     @GetMapping("/passagens/{id}")
     public ResponseEntity<PassagemResponseDto> buscarPassagem(@PathVariable Long id) {
         return ResponseEntity.ok(consultarPassagemUseCase.buscar(id));
-    }
-
-    @GetMapping("/viagens/{viagemId}/passagens")
-    public ResponseEntity<List<PassagemResponseDto>> listarPorViagem(@PathVariable Long viagemId) {
-        return ResponseEntity.ok(consultarPassagemUseCase.listarPorViagem(viagemId));
     }
 }
