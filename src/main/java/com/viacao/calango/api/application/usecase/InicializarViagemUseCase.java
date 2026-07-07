@@ -22,6 +22,7 @@ public class InicializarViagemUseCase {
     private final ConfiguracaoSistemaRepository configuracaoRepository;
 
     private static final double LIMITE_REVISAO_KM_PADRAO = 10000.0;
+
     @Transactional
     public Viagem executar(Viagem viagem) {
 
@@ -54,6 +55,9 @@ public class InicializarViagemUseCase {
                 ocupacao.setNumeroAssento(assento);
                 ocupacao.setOrdemSegmento(i);
                 ocupacao.setStatus(StatusAssento.LIVRE);
+
+                // Garante que o objeto na memória também conheça as ocupações criadas
+                viagemSalva.getOcupacoes().add(ocupacao);
                 matrizOcupacao.add(ocupacao);
             }
         }

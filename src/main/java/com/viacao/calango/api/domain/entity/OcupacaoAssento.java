@@ -36,5 +36,5 @@ public class OcupacaoAssento {
     private StatusAssento status = StatusAssento.LIVRE;
 
     @Version
-    private Integer versao;
+    private Integer versao = 0;
 }

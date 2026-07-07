@@ -36,6 +36,7 @@ public class VenderPassagemUseCase {
                 .orElseThrow(() -> new RegraNegocioException("Viagem não encontrada."));
 
         if (viagem.getStatus() != StatusViagem.PROGRAMADA) {
+
             throw new RegraNegocioException("Esta viagem não está disponível para venda.");
         }
         if (viagem.getOnibus().precisaRevisao()) {
