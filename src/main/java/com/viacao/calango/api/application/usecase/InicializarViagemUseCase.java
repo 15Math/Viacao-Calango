@@ -55,8 +55,6 @@ public class InicializarViagemUseCase {
                 ocupacao.setNumeroAssento(assento);
                 ocupacao.setOrdemSegmento(i);
                 ocupacao.setStatus(StatusAssento.LIVRE);
-
-                // Garante que o objeto na memória também conheça as ocupações criadas
                 viagemSalva.getOcupacoes().add(ocupacao);
                 matrizOcupacao.add(ocupacao);
             }

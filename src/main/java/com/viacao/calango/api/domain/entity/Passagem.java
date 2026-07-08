@@ -1,5 +1,6 @@
 package com.viacao.calango.api.domain.entity;
 
+import com.viacao.calango.api.domain.enums.StatusPagamento;
 import com.viacao.calango.api.domain.enums.TipoPagamento;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -41,4 +42,8 @@ public class Passagem {
 
     @Column(name = "codigo_transacao")
     private String codigoTransacao;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_pagamento")
+    private StatusPagamento statusPagamento = StatusPagamento.PENDENTE;
 }

@@ -2,9 +2,11 @@ package com.viacao.calango.api.application.usecase;
 
 import com.viacao.calango.api.application.dto.PassagemRequestDto;
 import com.viacao.calango.api.domain.entity.*;
+import com.viacao.calango.api.domain.enums.StatusPagamento;
 import com.viacao.calango.api.domain.enums.StatusViagem;
 import com.viacao.calango.api.domain.enums.TipoPagamento;
 import com.viacao.calango.api.domain.exception.RegraNegocioException;
+import com.viacao.calango.api.domain.port.GatewayPagamento;
 import com.viacao.calango.api.domain.service.CalculadoraPrecoService;
 import com.viacao.calango.api.domain.service.RotaUtilService;
 import com.viacao.calango.api.infrastructure.repository.ParadaRepository;
@@ -29,6 +31,7 @@ public class VenderPassagemUseCase {
     private final CalculadoraPrecoService calculadoraPrecoService;
     private final AlocacaoPassageiroUseCase alocacaoPassageiroUseCase;
     private final RotaUtilService rotaUtilService;
+    private final GatewayPagamento gatewayPagamento;
 
     @Transactional
     public Passagem vender(PassagemRequestDto request) {
@@ -36,7 +39,6 @@ public class VenderPassagemUseCase {
                 .orElseThrow(() -> new RegraNegocioException("Viagem não encontrada."));
 
         if (viagem.getStatus() != StatusViagem.PROGRAMADA) {
-
             throw new RegraNegocioException("Esta viagem não está disponível para venda.");
         }
         if (viagem.getOnibus().precisaRevisao()) {
@@ -65,6 +67,11 @@ public class VenderPassagemUseCase {
                 isTrajetoCompleto
         );
 
+        boolean sucessoPagamento = gatewayPagamento.processar(precoFinal, request.tipoPagamento());
+        if (!sucessoPagamento) {
+            throw new RegraNegocioException("Falha na autorização do pagamento. Venda cancelada.");
+        }
+
         Integer assento = request.numeroAssento() != null
                 ? alocacaoPassageiroUseCase.alocarAssentoEspecifico(viagem.getId(), ordens[0], ordens[1], request.numeroAssento())
                 : alocacaoPassageiroUseCase.alocarMelhorAssento(viagem.getId(), ordens[0], ordens[1]);
@@ -78,6 +85,7 @@ public class VenderPassagemUseCase {
         passagem.setDataCompra(LocalDateTime.now());
         passagem.setTipoPagamento(request.tipoPagamento());
         passagem.setCodigoTransacao(gerarCodigoTransacao(request.tipoPagamento()));
+        passagem.setStatusPagamento(StatusPagamento.PAGO);
 
         return passagemRepository.save(passagem);
     }

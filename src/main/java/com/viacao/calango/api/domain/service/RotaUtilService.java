@@ -8,7 +8,7 @@ import java.util.List;
 
 @Service
 public class RotaUtilService {
-
+    //verifica se tanto a origem quanto o destino realmente existem no itinerario
     public int[] resolverOrdensTrecho(List<RotaParada> itinerario, Long origemId, Long destinoId) {
         int ordemInicio = -1;
         int ordemFim = -1;
@@ -26,6 +26,7 @@ public class RotaUtilService {
         return new int[]{ordemInicio, ordemFim};
     }
 
+    //verifica se o trajeto vai ser corrido completo
     public boolean isTrajetoCompleto(List<RotaParada> itinerario, Long origemId, Long destinoId) {
         return itinerario.get(0).getParada().getId().equals(origemId)
                 && itinerario.get(itinerario.size() - 1).getParada().getId().equals(destinoId);

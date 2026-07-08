@@ -56,7 +56,7 @@ INSERT INTO faixa_antecedencia (dias_minimos, desconto) VALUES (30, 0.20);
 INSERT INTO faixa_antecedencia (dias_minimos, desconto) VALUES (15, 0.10);
 INSERT INTO faixa_antecedencia (dias_minimos, desconto) VALUES (7, 0.05);
 
--- Ocupação de Assentos (Adicionada a coluna "versao" com valor 0)
+-- Ocupação de Assentos
 INSERT INTO ocupacao_assento (viagem_id, numero_assento, ordem_segmento, "status", origem_segmento_id, destino_segmento_id, versao)
 VALUES (1, 1, 0, 'LIVRE', 1, 2, 0);
 INSERT INTO ocupacao_assento (viagem_id, numero_assento, ordem_segmento, "status", origem_segmento_id, destino_segmento_id, versao)

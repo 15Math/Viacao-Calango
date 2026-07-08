@@ -19,6 +19,7 @@ public class FrotaController {
     private final GerenciarOnibusUseCase gerenciarOnibusUseCase;
     private final ControlarRevisaoUseCase controlarRevisaoUseCase;
 
+    //cadastra um onibus
     @PostMapping("/onibus")
     public ResponseEntity<OnibusResponseDto> cadastrarOnibus(@RequestBody OnibusRequestDto request) {
         return ResponseEntity.status(HttpStatus.CREATED)
